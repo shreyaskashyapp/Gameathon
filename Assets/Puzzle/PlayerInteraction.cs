@@ -13,8 +13,14 @@ public class PlayerInteraction : MonoBehaviour
         CheckInteraction();
         if(Input.GetKeyDown(KeyCode.E) && currentInteractable != null)
         {
+            Debug.Log("YEs");
             currentInteractable.Interact(); 
         }
+    }
+    public void Interact()
+    {
+        // Implement the interaction logic here.
+        Debug.Log("Interacting with the object");
     }
 
     void CheckInteraction()
@@ -26,8 +32,11 @@ public class PlayerInteraction : MonoBehaviour
             if (hit.collider.tag == "Interactable")
             {
                 Interactable newInteractable = hit.collider.GetComponent<Interactable>();
-                if (currentInteractable && newInteractable != currentInteractable)
+                
+                if(currentInteractable && newInteractable != currentInteractable)
+                {
                     currentInteractable.DisableOutline();
+                }
                 if (newInteractable.enabled)
                 {
                     SetNewCurrentInteractable(newInteractable);
@@ -48,10 +57,12 @@ public class PlayerInteraction : MonoBehaviour
     {
         currentInteractable = newInteractable;
         currentInteractable.EnableOutline();
+        HUDController.instance.EnableInteractionText(currentInteractable.message);
     }
 
     void DisableCurrentInteractable()
     {
+        HUDController.instance.DisableInteractionText();
         if (currentInteractable)
         {
             currentInteractable.DisableOutline();

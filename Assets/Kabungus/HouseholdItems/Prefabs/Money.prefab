@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 450601811953768700}
   - component: {fileID: 7097741951868845897}
   - component: {fileID: 7151045012284897213}
+  - component: {fileID: 1949063262}
   m_Layer: 0
   m_Name: Money
   m_TagString: Interactable
@@ -131,3 +132,17 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!64 &1949063262
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2107728081518688553}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -2929563531361107545, guid: 06175cfee688f5344a660f847b47fb85, type: 3}

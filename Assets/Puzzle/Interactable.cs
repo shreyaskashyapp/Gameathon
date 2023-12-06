@@ -19,9 +19,10 @@ public class Interactable : MonoBehaviour
         outline.enabled = false;
     }
 
-    public void Interaction()
+    public void Interact()
     {
         onInteraction.Invoke();
+        Debug.Log("EEEEE");
     }
     public void EnableOutline()
     {
