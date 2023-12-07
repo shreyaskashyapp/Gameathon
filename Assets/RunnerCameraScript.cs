@@ -10,7 +10,6 @@ public class RunnerCameraScript : MonoBehaviour
     public float cameraDelay = 0.02f;
     public bool isGrounded;
 
-    // Update is called once per frame
     void Update()
     {
 

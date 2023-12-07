@@ -35,13 +35,11 @@ public class PlayerMovement2 : MonoBehaviour
 
         Vector3 direction = new Vector3(horizontal, 0f, vertical).normalized;
 
-        // Check if player is at a junction
         isJunction = Physics.CheckSphere(transform.position, 2f, junctionLayer);
 
-        // Check if player is grounded
+
         isGrounded = Physics.CheckSphere(legSphere.transform.position, 1f, ground);
 
-        // Apply gravity if not grounded
         if (isGrounded && velocity.y < 0)
         {
             velocity.y = -2f; // Small negative value to keep the player grounded
@@ -83,17 +81,18 @@ public class PlayerMovement2 : MonoBehaviour
     }
 
     IEnumerator JumpCoroutine()
-    {
-        
-        float jumpVelocity = Mathf.Sqrt(jumpHeight * -2f * gravity);
+{
+    float jumpVelocity = Mathf.Sqrt(jumpHeight * -2f * gravity);
 
-        velocity.y = jumpVelocity;
-        yield return new WaitForSeconds(0.8f);
-        animator.SetBool("isJumping",false);
-        
-        animator.Play("idle");
-    }
+    velocity.y = jumpVelocity;
+    yield return new WaitForSeconds(1.1f);
 
+    // Move the player 1 unit ahead
+    transform.Translate(Vector3.forward * 1f);
+
+    animator.SetBool("isJumping", false);
+    animator.Play("idle");
+}
     void HandleJumpInput()
     {
         if (Input.GetButtonDown("Jump") && isGrounded)
