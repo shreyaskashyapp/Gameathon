@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
@@ -14,12 +13,14 @@ public class PlayerMovement : MonoBehaviour
     public float turnSmoothTime = 0.1f;
     public float jumpHeight = 3f;
     public float gravity = -9.81f;
-    public Transform legSphere;
+    public GameObject legSphere;
     public LayerMask ground;
+    public LayerMask junction;
 
     bool isGrounded;
     bool isSprinting;
     bool isJogging;
+    public bool isJunction;
     float turnSmoothVelocity;
     Vector3 velocity;
 
@@ -40,6 +41,7 @@ public class PlayerMovement : MonoBehaviour
         isGrounded = Physics.CheckSphere(legSphere.transform.position, 1f, ground);
         isSprinting = (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift)) && direction.magnitude >= 0.1f;
         isJogging = !isSprinting && direction.magnitude >= 0.1f;
+        isJunction = Physics.CheckSphere(transform.position, 2f, junction);
 
         UpdateMovement(direction);
 
@@ -54,7 +56,7 @@ public class PlayerMovement : MonoBehaviour
 
     void UpdateMovement(Vector3 direction)
     {
-        if (direction.magnitude >= 0.1f)
+        if (direction.magnitude >= 0.1f && isGrounded)
         {
             float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg + cam.eulerAngles.y;
             float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothVelocity, turnSmoothTime);
@@ -78,15 +80,33 @@ public class PlayerMovement : MonoBehaviour
 
     void HandleJumpInput()
     {
-        if (isGrounded && Input.GetButtonDown("Jump"))
+        if (Input.GetButtonDown("Jump") && isGrounded)
         {
-            velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
+            StartCoroutine(JumpCoroutine());
         }
+    }
+
+    IEnumerator JumpCoroutine()
+    {
+        animator.Play("jump");
+        float jumpVelocity = Mathf.Sqrt(jumpHeight * -2f * gravity);
+
+        velocity.y = jumpVelocity;
+        yield return new WaitForSeconds(2f);
+
+        animator.Play("idle");
+
     }
 
     void ApplyGravity()
     {
         velocity.y += gravity * Time.deltaTime;
         controller.Move(velocity * Time.deltaTime);
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position,2f);
     }
 }

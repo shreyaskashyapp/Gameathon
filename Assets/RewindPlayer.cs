@@ -7,13 +7,13 @@ public class RewindPlayer : MonoBehaviour
     public bool isRewinding;
     List<RecordedFrame> recordedFrames;
     public Animator animator;
+    public int rewindCount = 3;
 
-    // Structure to store position, rotation, and animation data
     private struct RecordedFrame
     {
         public Vector3 position;
         public Quaternion rotation;
-        public Dictionary<string, bool> animationParameters; // Animation state
+        public Dictionary<string, bool> animationParameters;
 
         public RecordedFrame(Vector3 pos, Quaternion rot, Animator animator)
         {
@@ -21,7 +21,6 @@ public class RewindPlayer : MonoBehaviour
             rotation = rot;
             animationParameters = new Dictionary<string, bool>();
 
-            // Record all boolean parameters from the animator
             var parameters = animator.parameters;
             foreach (var param in parameters)
             {
@@ -33,18 +32,18 @@ public class RewindPlayer : MonoBehaviour
         }
     }
 
-    // Start is called before the first frame update
     void Start()
     {
         recordedFrames = new List<RecordedFrame>();
     }
 
-    // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Return))
+        if (Input.GetKeyDown(KeyCode.Return) && rewindCount>0)
         {
             StartRewind();
+            rewindCount= rewindCount -1;
+            Debug.Log(rewindCount);
         }
         if (Input.GetKeyUp(KeyCode.Return))
         {
@@ -63,11 +62,8 @@ public class RewindPlayer : MonoBehaviour
             Record();
         }
 
-        // Update animation state
         foreach (var param in recordedFrames.Count > 0 ? recordedFrames[0].animationParameters : new Dictionary<string, bool>())
         {
-            Debug.Log(param.Key + 
-            param.Value);
             animator.SetBool(param.Key, param.Value);
         }
     }
@@ -80,7 +76,16 @@ public class RewindPlayer : MonoBehaviour
     void Rewind()
     {
         RecordedFrame frame = recordedFrames[0];
-        transform.position = frame.position;
+
+        if (frame.animationParameters.ContainsKey("isJumping") && frame.animationParameters["isJumping"])
+        {
+            transform.position = Vector3.Lerp(transform.position, frame.position, Time.fixedDeltaTime * 5f);
+        }
+        else
+        {
+            transform.position = frame.position;
+        }
+
         transform.rotation = frame.rotation;
 
         foreach (var param in frame.animationParameters)
