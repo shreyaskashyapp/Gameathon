@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class Timer : MonoBehaviour
 {
@@ -17,8 +18,15 @@ public class Timer : MonoBehaviour
             timerText.text = seconds.ToString();
         }
         else if (remainingTime <= 0)
-            remainingTime = 3;
+        {
+            remainingTime = 30;
+
             //Re start scene
+            int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
+
+            // Reload the current scene
+            SceneManager.LoadScene(currentSceneIndex);
+        }
 
     }
 }
