@@ -9,10 +9,12 @@ public class Interactable : MonoBehaviour
     public string message;
     public UnityEvent onInteraction;
 
+
     PlayerInteraction interaction;
 
     // Reference to the TV object
-    public GameObject TV;
+    public GameObject Binoculars;
+    public GameObject hollow_knight;
 
     void Start()
     {
@@ -47,7 +49,7 @@ public class Interactable : MonoBehaviour
 
         if (Physics.Raycast(ray, out hit, Mathf.Infinity))
         {
-            if (hit.collider != null && hit.collider.gameObject == TV)
+            if (hit.collider != null && hit.collider.gameObject == Binoculars)
             {
                 
                 return true;
@@ -56,6 +58,10 @@ public class Interactable : MonoBehaviour
 
         return false;
     }
+    public void FixedUpdate()
+    {
+        hollow();
+    }
 
     // Check if the TV is NOT in the player's line of sight
     public bool IsNotLookingAtTV()
@@ -63,4 +69,13 @@ public class Interactable : MonoBehaviour
         return !IsLookingAtTV();
     }
 
+    public void hollow()
+    {
+
+        if ( interaction.NumberOfCollectibles == 1)
+        {
+            Destroy(Binoculars);
+            Destroy(hollow_knight);
+        }
+    }
 }
