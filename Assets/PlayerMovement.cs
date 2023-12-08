@@ -22,6 +22,7 @@ public class PlayerMovement : MonoBehaviour
     bool isJogging;
     public bool isJunction;
     float turnSmoothVelocity;
+    bool isSliding;
     Vector3 velocity;
 
     RewindPlayer rp;
@@ -38,9 +39,8 @@ public class PlayerMovement : MonoBehaviour
 
         Vector3 direction = new Vector3(horizontal, 0f, vertical).normalized;
 
-        isGrounded = Physics.CheckSphere(legSphere.transform.position, 1f, ground);
-        isSprinting = (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift)) && direction.magnitude >= 0.1f;
-        isJogging = !isSprinting && direction.magnitude >= 0.1f;
+        isGrounded = Physics.CheckSphere(legSphere.transform.position, 0.7f, ground);
+        isSprinting = direction.magnitude >= 0.1f;
         isJunction = Physics.CheckSphere(transform.position, 2f, junction);
 
         UpdateMovement(direction);
@@ -56,7 +56,7 @@ public class PlayerMovement : MonoBehaviour
 
     void UpdateMovement(Vector3 direction)
     {
-        if (direction.magnitude >= 0.1f && isGrounded)
+        if (direction.magnitude >= 0.1f)
         {
             float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg + cam.eulerAngles.y;
             float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothVelocity, turnSmoothTime);
@@ -68,6 +68,14 @@ public class PlayerMovement : MonoBehaviour
             float currentSpeed = isSprinting ? speed * sprintSpeedMultiplier : (isJogging ? speed * jogSpeedMultiplier : speed);
 
             controller.Move(moveDir * currentSpeed * Time.deltaTime);
+        }
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            animator.Play("slide");
+            AnimatorStateInfo stateInfo21 = animator.GetCurrentAnimatorStateInfo(0);
+            float animLength21 = stateInfo21.length;
+            Invoke("slideReset", animLength21);
+            isSliding = true;
         }
     }
 
@@ -92,7 +100,7 @@ public class PlayerMovement : MonoBehaviour
         float jumpVelocity = Mathf.Sqrt(jumpHeight * -2f * gravity);
 
         velocity.y = jumpVelocity;
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(2.2f);
 
         animator.Play("idle");
 
@@ -107,6 +115,9 @@ public class PlayerMovement : MonoBehaviour
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position,2f);
+        Gizmos.DrawWireSphere(transform.position, 2f);
     }
+    void slideReset(){
+    animator.Play("Breathing Idle");
+  }
 }
